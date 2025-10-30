@@ -408,6 +408,22 @@ void lang_synchronize(void) {
       unregister_code(KC_SPACE);
       unregister_code(KC_LEFT_GUI);
     } break;
+    // --- KB - Добавлен способ смены языка через Karabiner по F18 и F19
+    case LANG_CHANGE_CARABINER: {
+      if (lang_current == 0) {
+        register_code(KC_F18);
+        unregister_code(KC_F18);
+      } else {
+        register_code(KC_F19);
+        unregister_code(KC_F19);
+      }
+      // кривовато но приходится после переключения добавлять задержку
+      // потому что karabiner не всегда срабатывает моментально 
+      wait_ms(80);
+      // --- KB - После синхронизации устанавливаем текущий язык равным тому, который должен быть
+      // поскольку karabiner надёжно переключает язык в системе
+      lang_current = lang_should_be;
+    } break;
   }
 }
 
@@ -430,6 +446,12 @@ void lang_activate_from_user_without_sync(Lang lang) {
 }
 
 Key lang_process(Key key, bool down) {
+    // --- KB - добавлен сброс таймера на любое нажатие/отпускание клавиши
+    if (lang_current_change == LANG_CHANGE_CARABINER) {
+        lang_timer = timer_read();
+    }
+    // ./--- KB
+
   Key after_agnostic = lang_calc_agnostic(key);
   if (after_agnostic != NONE_KEY) {
     key = after_agnostic;
@@ -456,8 +478,14 @@ Key lang_process(Key key, bool down) {
 }
 
 void lang_user_timer(void) {
+    // --- KB - увеличил таймер с 100 до 400 для метода переключения через Karabiner
+    uint32_t lang_back_delay = 100;
+    if (lang_current_change == LANG_CHANGE_CARABINER) {
+        lang_back_delay = 400;
+    }
+
 	// Нужно выключать язык после прохождения определённого времени, потому что пользователь ожидает как будто шифт на самом деле включён
-	if (lang_pressed_count == 0 && lang_current != lang_should_be && timer_read() - lang_timer >= 100) {
+	if (lang_pressed_count == 0 && lang_current != lang_should_be && timer_read() - lang_timer >= lang_back_delay) {
 		lang_activate(lang_should_be);
 	}
 }
@@ -555,6 +583,12 @@ bool lang_shift_process_custom_keycodes(Key key, keyrecord_t* record) {
     case LA_WISP:
       if (down) {
         lang_current_change = LANG_CHANGE_WIN_SPACE;
+      }
+      return false;
+    // --- KB - добавляем смену языка через Karabiner
+    case LA_CRBN:
+      if (down) {
+        lang_current_change = LANG_CHANGE_CARABINER;
       }
       return false;
     case AG_3DOT:

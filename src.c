@@ -127,9 +127,9 @@ void shift_activate(Shift shift) {
 	if (shift_current != shift) {
 		shift_timer = timer_read();
 		if (shift) {
-			register_code(KC_LSHIFT);
+			register_code(KC_LEFT_SHIFT);
 		} else {
-			unregister_code(KC_LSHIFT);
+			unregister_code(KC_LEFT_SHIFT);
 		}
 	}
 	shift_current = shift;
@@ -349,64 +349,64 @@ void lang_synchronize(void) {
     case LANG_CHANGE_CAPS: {
       // Костыль, потому что при нажатии Shift+Caps включается режим Caps, а не переключение языка :facepalm:
       if (shift_current == 1) {
-      	unregister_code(KC_LSHIFT);
+      	unregister_code(KC_LEFT_SHIFT);
       	register_code(KC_CAPS);
       	unregister_code(KC_CAPS);
-      	register_code(KC_LSHIFT);
+      	register_code(KC_LEFT_SHIFT);
       } else {
       	register_code(KC_CAPS);
       	unregister_code(KC_CAPS);
       }
     } break;
     case LANG_CHANGE_ALT_SHIFT: {
-      register_code(KC_LALT);
-      register_code(KC_LSHIFT);
-      unregister_code(KC_LSHIFT);
-      unregister_code(KC_LALT);
+      register_code(KC_LEFT_ALT);
+      register_code(KC_LEFT_SHIFT);
+      unregister_code(KC_LEFT_SHIFT);
+      unregister_code(KC_LEFT_ALT);
 
       // Костыль, потому что при зажатом шифте если хочется нажать клавишу, которая переключает язык, то шифт слетает... 
       if (shift_current == 1) {
-        register_code(KC_LSHIFT);
+        register_code(KC_LEFT_SHIFT);
       }
     } break;
     case LANG_CHANGE_SHIFT_ALT: {
-      register_code(KC_LSHIFT);
-      register_code(KC_LALT);
-      unregister_code(KC_LALT);
-      unregister_code(KC_LSHIFT);
+      register_code(KC_LEFT_SHIFT);
+      register_code(KC_LEFT_ALT);
+      unregister_code(KC_LEFT_ALT);
+      unregister_code(KC_LEFT_SHIFT);
 
       // Костыль, потому что при зажатом шифте если хочется нажать клавишу, которая переключает язык, то шифт слетает... 
       if (shift_current == 1) {
-        register_code(KC_LSHIFT);
+        register_code(KC_LEFT_SHIFT);
       }
     } break;
     case LANG_CHANGE_CTRL_SHIFT: {
-      register_code(KC_LCTRL);
-      register_code(KC_LSHIFT);
-      unregister_code(KC_LSHIFT);
+      register_code(KC_LEFT_CTRL);
+      register_code(KC_LEFT_SHIFT);
+      unregister_code(KC_LEFT_SHIFT);
       unregister_code(KC_LCTL);
 
       // Костыль, потому что при зажатом шифте если хочется нажать клавишу, которая переключает язык, то шифт слетает...
       if (shift_current == 1) {
-        register_code(KC_LSHIFT);
+        register_code(KC_LEFT_SHIFT);
       }
     } break;
     case LANG_CHANGE_SHIFT_CTRL: {
-      register_code(KC_LSHIFT);
-      register_code(KC_LCTRL);
+      register_code(KC_LEFT_SHIFT);
+      register_code(KC_LEFT_CTRL);
       unregister_code(KC_LCTL);
-      unregister_code(KC_LSHIFT);
+      unregister_code(KC_LEFT_SHIFT);
 
       // Костыль, потому что при зажатом шифте если хочется нажать клавишу, которая переключает язык, то шифт слетает...
       if (shift_current == 1) {
-        register_code(KC_LSHIFT);
+        register_code(KC_LEFT_SHIFT);
       }
     } break;
     case LANG_CHANGE_WIN_SPACE: {
-      register_code(KC_LGUI);
+      register_code(KC_LEFT_GUI);
       register_code(KC_SPACE);
       unregister_code(KC_SPACE);
-      unregister_code(KC_LGUI);
+      unregister_code(KC_LEFT_GUI);
     } break;
   }
 }
@@ -619,8 +619,8 @@ bool lang_shift_process_english_modifiers(Key key, keyrecord_t* record) {
       return false; \
     } break;
 
-  #define Rg(x) register_code(KC_L ## x)
-  #define Un(x) unregister_code(KC_L ## x)
+  #define Rg(x) register_code(KC_LEFT_ ## x)
+  #define Un(x) unregister_code(KC_LEFT_ ## x)
 
   switch (key) {
     PROCESS(CTRL_0, Rg(CTRL), Un(CTRL), false);
